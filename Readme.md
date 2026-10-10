@@ -1,41 +1,41 @@
-# WD-302 Assignment: Scroll Story
+# Vancouver — Four Seasons
 
-Build a one-page website that tells a story as the reader scrolls. Every animation should help tell that story.
+- **Live:** https://story-teller-gilt.vercel.app/
+- **Repo:** https://github.com/yk-graph/story-teller
+- **Author:** yk-graph
+- **Story:** A cinematic scroll-story of Vancouver through its four seasons — spring, summer, autumn, and winter.
 
-This is an individual assignment. The scope is small on purpose: one page, deployed, done well.
+## About
 
-## Pick a story
+A one-page scroll story. As the reader scrolls from top to bottom, the year turns:
+each season (SPRING → SUMMER → AUTUMN → WINTER) plays out over a full-screen video
+with its own chapter title and subtitles, like a short film trailer for the city.
 
-Anything you can tell in one page. Some ideas:
+Every scene is anchored to a real Vancouver place — Stanley Park, English Bay,
+Granville Island, Grouse Mountain — and animation is used with restraint so that
+each moment arrives quietly and leaves gracefully.
 
-- How something is made (coffee, a song, a sneaker, a video game)
-- A journey (a package from order to doorstep, a message across the internet, a river to the sea)
-- A place, a person, a year, a hobby
-- A product or app you wish existed
-- Your own portfolio, told as a story
+## Tech Stack
 
-## What it needs
+- [Next.js 16](https://nextjs.org/) (App Router), React 19, TypeScript
+- [Motion](https://motion.dev/) for scroll-linked animation and scene transitions
+- Fonts: Bebas Neue / Cormorant Garamond (`@fontsource`)
+- Deployed on [Vercel](https://vercel.com/)
 
-- One page. The reader scrolls from top to bottom and the story plays.
-- Animation drives the page. Use GSAP, Motion, or both. Pick what fits each moment.
+## Getting Started
 
-Artwork can be emoji, CSS shapes, gradients, or images. No design skills required.
+```bash
+npm install
+npm run dev
+```
 
-## Things worth doing
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-None of these are required. They are what separates a good page from a great one.
+## Scripts
 
-- Restraint. If it moves, it means something.
-- A pinned section that holds the reader in place while something plays out.
-- Something that leaves the screen gracefully instead of blinking out.
-- Smooth on a phone as well as a laptop.
-
-## Deploy and submit
-
-- Deploy to Vercel. Demo the deployed site, not localhost.
-- At the top of your `README.md`: the live link, the repo link, your name, and your story in one sentence.
-- Submit your deployed link using the form below.
-
-**Submission form:** https://docs.google.com/forms/d/e/1FAIpQLSciWMpUghRynw1CTdsDFmlXzh-zRdcttrx8hjtF81m2P98emw/viewform
-
-On the last day of the course, every submission gets shown in class. Build something you'd want people to see.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm run start` | Run the built app |
+| `npm run lint` | Run ESLint |
