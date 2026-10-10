@@ -16,18 +16,8 @@ export type SeasonData = {
   lines: string[];          // trailer narration cards
   subtitles: string[];      // on-screen subtitles
   place: string;
+  video: string;            // full-screen background clip served from /public
 };
-
-const MOUNTAINS =
-  "M0,260 L80,190 L140,215 L230,120 L290,170 L360,95 L420,150 L470,130 L540,60 L610,140 L680,110 L760,170 L840,90 L900,140 L980,120 L1060,180 L1140,130 L1200,170 L1200,400 L0,400 Z";
-const FAR =
-  "M0,230 L120,170 L200,190 L310,140 L420,175 L520,120 L650,160 L780,130 L900,165 L1020,135 L1200,180 L1200,400 L0,400 Z";
-
-// simplified skyline (downtown)
-const towers = [
-  [40, 70], [70, 110], [100, 85], [128, 150], [160, 120], [190, 175], [222, 140], [250, 200], [282, 160],
-  [310, 130], [340, 185], [372, 145], [400, 105], [430, 125], [460, 90], [490, 60],
-];
 
 function Line({ text, i, total, p }: { text: string; i: number; total: number; p: MotionValue<number> }) {
   const start = 0.18 + (i / total) * 0.5;
@@ -73,17 +63,10 @@ export default function Season({ d, mx, my }: { d: SeasonData; mx: MotionValue<n
   const { scrollYProgress: raw } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const p = useSpring(raw, { stiffness: 120, damping: 30, mass: 0.4 });
 
-  // camera: slow dolly-in
+  // camera: slow dolly-in (applied to the background video)
   const camScale = useTransform(p, [0, 1], [1.15, 1]);
-  const skyY = useTransform(p, [0, 1], ["0%", "-8%"]);
-  const farY = useTransform(p, [0, 1], ["6%", "-2%"]);
-  const nearY = useTransform(p, [0, 1], ["12%", "0%"]);
-  const cityY = useTransform(p, [0, 1], ["22%", "0%"]);
 
-  // subtle camera sway driven by the mouse
-  const farX = useTransform(mx, (v) => v * -10);
-  const nearX = useTransform(mx, (v) => v * -24);
-  const cityX = useTransform(mx, (v) => v * -40);
+  // seasonal color glow that follows the mouse
   const glowX = useTransform(mx, (v) => `${50 + v * 15}%`);
   const glowY = useTransform(my, (v) => `${30 + v * 10}%`);
   const glow = useTransform([glowX, glowY], ([x, y]) => `radial-gradient(circle at ${x} ${y}, ${d.glow}, transparent 55%)`);
@@ -104,42 +87,14 @@ export default function Season({ d, mx, my }: { d: SeasonData; mx: MotionValue<n
     <section ref={ref} style={{ height: "420vh", position: "relative" }}>
       <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
         <motion.div style={{ position: "absolute", inset: 0, scale: camScale }}>
-          <motion.div
-            style={{
-              position: "absolute", inset: "-10% 0 0 0", y: skyY,
-              background: `linear-gradient(180deg, ${d.sky[0]} 0%, ${d.sky[1]} 45%, ${d.sky[2]} 75%)`,
-            }}
+          {/* full-screen background clip — object-fit: cover fills the viewport whatever the aspect ratio */}
+          <video
+            src={d.video}
+            autoPlay muted loop playsInline preload="auto"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
+          {/* seasonal color glow that follows the mouse */}
           <motion.div style={{ position: "absolute", inset: 0, background: glow, mixBlendMode: "screen" }} />
-
-          <motion.svg viewBox="0 0 1200 400" preserveAspectRatio="none"
-            style={{ position: "absolute", left: "-5%", width: "110%", bottom: "18%", height: "45%", x: farX, y: farY, opacity: 0.55 }}>
-            <path d={FAR} fill={d.mountain} />
-          </motion.svg>
-          <motion.svg viewBox="0 0 1200 400" preserveAspectRatio="none"
-            style={{ position: "absolute", left: "-5%", width: "110%", bottom: "14%", height: "50%", x: nearX, y: nearY }}>
-            <path d={MOUNTAINS} fill={d.mountain} style={{ filter: "brightness(0.6)" }} />
-            {d.particles === "snow" && (
-              <path d="M540,60 L520,95 L545,85 L560,100 L575,80 Z M840,90 L822,118 L845,110 L858,122 L870,104 Z M360,95 L345,120 L365,113 L378,124 Z" fill="#fff" opacity="0.85" />
-            )}
-          </motion.svg>
-
-          {/* water surface */}
-          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "20%", background: `linear-gradient(180deg, ${d.water}, #000)` }} />
-
-          <motion.svg viewBox="0 0 520 220" preserveAspectRatio="xMidYMax meet"
-            style={{ position: "absolute", right: "4%", bottom: "19%", width: "min(60vw, 720px)", x: cityX, y: cityY }}>
-            {towers.map(([x, h], i) => (
-              <g key={i}>
-                <rect x={x} y={220 - h} width={24} height={h} fill={d.city} />
-                {Array.from({ length: Math.floor(h / 14) }, (_, j) => (
-                  <rect key={j} x={x + 5 + ((i + j) % 3) * 6} y={226 - h + j * 14} width={3} height={4}
-                    fill="#ffe7a8" opacity={(i * 7 + j * 3) % 5 === 0 ? 0.9 : 0.15} />
-                ))}
-              </g>
-            ))}
-          </motion.svg>
-
           <Particles kind={d.particles} seed={d.chapter.length * 31 + 3} />
         </motion.div>
 
